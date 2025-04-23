@@ -8,6 +8,7 @@
 #include "entity.hpp"
 #include "Utils.hpp"
 #include "Player.hpp"
+#include "enemy.hpp"
 
 
 
@@ -30,6 +31,7 @@ int main(int argc, char* argv[]) {
 
 	std::vector<Entity> entities = {};
 
+
 	for (int i = 0; i <= 2; i++) {
 		entities.emplace_back(Entity({i * 32.0f, (float) window.getWindowHeight()/6 - 32 }, grassTexture, 32, 32));
 	}
@@ -48,9 +50,15 @@ int main(int argc, char* argv[]) {
 
 	
 	Player player({ 50, 50 }, playerTexture, 30, 46);
-
 	std::vector<bool> keyStates(SDLK_Z, false);
-	
+
+	std::vector<Enemy> enemies = {};
+
+
+	{
+		Enemy enemy({ 100, 200 }, playerTexture, 30, 46);
+		enemies.emplace_back(enemy);
+	}
 
 
 	bool isRunning = true;
@@ -101,7 +109,10 @@ int main(int argc, char* argv[]) {
 
 		while (accumulator >= timeStep) {
 
-			player.update(timeStep, keyStates, entities);
+			player.update(timeStep, keyStates, entities, enemies);
+			for (Enemy& e : enemies) {
+				e.update(timeStep, keyStates, entities, player);
+			}
 
 
 			accumulator -= timeStep;
@@ -127,6 +138,11 @@ int main(int argc, char* argv[]) {
 			window.render(e);
 		}
 		window.render(player);
+
+		for (Enemy& enemy : enemies) {
+			window.render(enemy);
+		}
+	
 
 		window.display();
 

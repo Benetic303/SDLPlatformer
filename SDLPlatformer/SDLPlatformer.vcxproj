@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enitity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="renderwindow.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>
+    <ClInclude Include="enemy.hpp" />
     <ClInclude Include="entity.hpp" />
     <ClInclude Include="math.hpp" />
     <ClInclude Include="Player.hpp" />

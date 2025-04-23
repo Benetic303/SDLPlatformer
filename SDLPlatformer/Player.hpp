@@ -3,15 +3,23 @@
 #include <SDL3_image/SDL_image.h>
 #include <vector>
 
-//#include "math.hpp"
 #include "entity.hpp"
 #include "math.hpp"
+#include "Utils.hpp"
+
+
+class Enemy;
+
+
 
 class Player : public Entity {
 public:
 	Player(Vector2f p_pos, SDL_Texture* p_tex, int width, int height);
 
-	void update(float timeStep, const std::vector<bool>& keyStates, std::vector<Entity>& entities);
+	void update(float timeStep, 
+				const std::vector<bool>& keyStates, 
+				std::vector<Entity>& entities, 
+				std::vector<Enemy>& enemies);
 
 	void changeX(float amount);
 	void changeY(float amount);
