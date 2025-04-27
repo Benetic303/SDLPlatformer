@@ -39,7 +39,7 @@ private:
 	float jumpForce;
 	float gravity;
 
-
+	float maxFallSpeed;
 
 
 };

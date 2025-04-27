@@ -15,9 +15,8 @@ Enemy::Enemy(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
     horizontalAcceleration(100.0f),
     jumpForce(200.0f),
     gravity(800.0f),
-    EnemySpeed(0.0f) // Initialize EnemySpeed to avoid uninitialized variable warning
-
-
+    EnemySpeed(0.0f), // Initialize EnemySpeed to avoid uninitialized variable warning
+    maxFallSpeed(500.0f)
 {
     // Any additional setup specific to Player goes here
     std::cout << "Player object fully constructed!" << std::endl;
@@ -85,88 +84,72 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
     if (velocity.x < -speed)
         velocity.x = -speed;
 
-
+    if (velocity.y > maxFallSpeed) { // Define maxFallSpeed if necessary
+        velocity.y = maxFallSpeed;
+    }
  
      
 
+    pos.x += velocity.x * timeStep; // Update X position
     SDL_FRect enemyAABB = { pos.x, pos.y, (float)getCurrentFrame().w, (float)getCurrentFrame().h };
 
-    pos.x += velocity.x * timeStep; // Update X position
-    enemyAABB.x = pos.x; // Update AABB's X position
-
-    // Check for collisions with the player
-    SDL_FRect playerAABB = { player.getPos().x, player.getPos().y,
-                             (float)player.getCurrentFrame().w, (float)player.getCurrentFrame().h };
-
-    if (checkCollision(enemyAABB, playerAABB)) {
-        // Handle collision with the player
-        std::cout << "Enemy collided with the player!" << std::endl;
-
-        // Example: Stop the enemy's movement upon collision
-        velocity.x = 0;
-        velocity.y = 0;
-
-        // Example: Push the player back
-        if (pos.x < player.getPos().x) {
-            //player.changeX(10.0f); // Push player to the right
-        }
-        else {
-            //player.changeX(-10.0f); // Push player to the left
-        }
-    }
-
-    pos.x += velocity.x * timeStep; // Update X position
-    enemyAABB.x = pos.x; // Update AABB's X position
-    // check for horizontel collisions
     for (Entity& e : entities) {
-        // entity bounding box
         SDL_FRect entityAABB = { e.getPos().x, e.getPos().y, (float)e.getCurrentFrame().w, (float)e.getCurrentFrame().h };
 
         if (checkCollision(enemyAABB, entityAABB)) {
-            // Collision occurred on the X axis!
-
-            // If moving right and collide
-            if (velocity.x > 0) {
-                // Move enemy back to the left edge of the entity
-                pos.x = entityAABB.x - enemyAABB.w;
-                velocity.x = 0;
+            if (velocity.x > 0) { // Moving right
+                pos.x = entityAABB.x - enemyAABB.w; // Place enemy to the left of the entity
             }
-            // If moving left and collide
-            else if (velocity.x < 0) {
-                // Move player back to the right edge of the entity
-                pos.x = entityAABB.x + entityAABB.w;
-                velocity.x = 0;
+            else if (velocity.x < 0) { // Moving left
+                pos.x = entityAABB.x + entityAABB.w; // Place enemy to the right of the entity
             }
+            velocity.x = 0; // Stop horizontal movement
             enemyAABB.x = pos.x; // Update AABB.x after resolving the collision
         }
     }
 
-    pos.y += velocity.y * timeStep; // Update X position
-    enemyAABB.y = pos.y; // Update AABB's X position
+    // --- Vertical Movement and Collision ---
+    pos.y += velocity.y * timeStep; // Update Y position
+    enemyAABB.y = pos.y; // Update AABB's Y position
 
-    // Check for vertical collisions
+    m_isOnGround = false; // Assume the enemy is not on the ground
     for (Entity& e : entities) {
-        // entity bounding box
         SDL_FRect entityAABB = { e.getPos().x, e.getPos().y, (float)e.getCurrentFrame().w, (float)e.getCurrentFrame().h };
 
         if (checkCollision(enemyAABB, entityAABB)) {
-
-            // If falling down and collide
-            if (velocity.y > 0) {
-                // Move player back to the top edge of the entity
-                pos.y = entityAABB.y - enemyAABB.h;
+            if (velocity.y > 0) { // Falling down
+                pos.y = entityAABB.y - enemyAABB.h; // Place enemy on top of the entity
                 velocity.y = 0;
-                m_isOnGround = true;
+                m_isOnGround = true; // Enemy is on the ground
             }
-            // If moving up and collide
-            else if (velocity.y < 0) {
-                // Move player back to the bottom edge of the entity
-                pos.y = entityAABB.y + entityAABB.h;
+            else if (velocity.y < 0) { // Moving up
+                pos.y = entityAABB.y + entityAABB.h; // Place enemy below the entity
                 velocity.y = 0;
             }
             enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
         }
     }
+
+    // --- Handle Collision with the Player ---
+    SDL_FRect playerAABB = { player.getPos().x, player.getPos().y, (float)player.getCurrentFrame().w, (float)player.getCurrentFrame().h };
+
+    if (checkCollision(enemyAABB, playerAABB)) {
+        if (player.getPos().y + player.getCurrentFrame().h <= pos.y + 5) { // Player is on top of the enemy
+            player.changeY(-velocity.y * timeStep); // Move the player with the enemy
+            player.m_isOnGround = true; // Ensure the player is considered on the ground
+        }
+        else {
+            // Resolve horizontal collision with the player
+            if (velocity.x > 0) {
+                pos.x = playerAABB.x - enemyAABB.w; // Place enemy to the left of the player
+            }
+            else if (velocity.x < 0) {
+                pos.x = playerAABB.x + playerAABB.w; // Place enemy to the right of the player
+            }
+            velocity.x = 0; // Stop horizontal movement
+        }
+    }
+
 
    
 }

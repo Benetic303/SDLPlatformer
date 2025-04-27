@@ -5,6 +5,7 @@
 
 #include "RenderWindow.hpp"
 #include "entity.hpp"
+#include "camera.hpp"
 
 RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
 	:window(NULL), renderer(NULL)
@@ -72,23 +73,19 @@ void RenderWindow::cleanUp() {
 void RenderWindow::clear() {
 	SDL_RenderClear(renderer);
 }
-void RenderWindow::render(Entity& p_entity) {
-	//SDL_Rect 
-	SDL_FRect src;
-	src.x = p_entity.getCurrentFrame().x;
-	src.y = p_entity.getCurrentFrame().y;
-	src.w = p_entity.getCurrentFrame().w;
-	src.h = p_entity.getCurrentFrame().h;
+void RenderWindow::render(Entity& p_entity, Camera camera) {
+    Vector2f entityPos = p_entity.getPos();
 
-	SDL_FRect dst;
-	dst.x = p_entity.getPos().x * 2;
-	dst.y = p_entity.getPos().y * 2;
-	dst.w = p_entity.getCurrentFrame().w * 2;
-	dst.h = p_entity.getCurrentFrame().h * 2;
+    SDL_FRect src = p_entity.getCurrentFrame();
 
-   
+    SDL_FRect dst;
+    dst.x = (entityPos.x - camera.cameraPos.x) * camera.zoom; // Adjust position relative to the camera
+    dst.y = (entityPos.y - camera.cameraPos.y) * camera.zoom; // Adjust position relative to the camera
+    dst.w = src.w * camera.zoom; // Width of the entity
+    dst.h = src.h * camera.zoom; // Height of the entity
 
-	SDL_RenderTexture(renderer, p_entity.getTex(), &src, &dst);
+    // Render the entity's texture
+    SDL_RenderTexture(renderer, p_entity.getTex(), &src, &dst);
 }
 
 

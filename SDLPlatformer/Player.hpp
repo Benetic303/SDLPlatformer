@@ -28,7 +28,7 @@ public:
 		return m_isOnGround; // Return the state variable
 	}
 
-	
+	bool m_isOnGround = true; // player on ground?
 
 
 private:
@@ -39,10 +39,10 @@ private:
 	float friction;
 	float horizontalAcceleration; // How quickly the player reaches max speed
 
-	bool m_isOnGround = true; // player on ground?
+	
 	float jumpForce;
 	float gravity;
-	
+	float maxFallSpeed;
 
 	
 

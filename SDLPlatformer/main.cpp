@@ -9,7 +9,7 @@
 #include "Utils.hpp"
 #include "Player.hpp"
 #include "enemy.hpp"
-
+#include "camera.hpp"
 
 
 
@@ -42,8 +42,12 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i <= 5; i++) {
 		entities.emplace_back(Entity({5 * i * 32.0f, (float)window.getWindowHeight() / 3 - 32 }, grassTexture, 32, 32));
 	}
-	for (int i = 0; i <= 15; i++) {
+	for (int i = 0; i <= 40; i++) {
 		entities.emplace_back(Entity({i * 32.0f, (float)window.getWindowHeight()/2 - 32 }, grassTexture, 32, 32));
+	}
+
+	for (int i = 0; i <= 70; i++) {
+		entities.emplace_back(Entity({ i * 32.0f, (float)window.getWindowHeight() / 2 + 2000 }, grassTexture, 32, 32));
 	}
 
 	std::cout << window.getWindowHeight() << std::endl;
@@ -59,7 +63,7 @@ int main(int argc, char* argv[]) {
 		Enemy enemy({ 100, 200 }, playerTexture, 30, 46);
 		enemies.emplace_back(enemy);
 	}
-
+	Camera camera({ player.getPos().x, player.getPos().y });
 
 	bool isRunning = true;
 	SDL_Event event;
@@ -110,14 +114,20 @@ int main(int argc, char* argv[]) {
 		while (accumulator >= timeStep) {
 
 			player.update(timeStep, keyStates, entities, enemies);
+
+			camera.update(player.getPos().x, player.getPos().y, window.getWindowWidth(), window.getWindowHeight());
+
+
 			for (Enemy& e : enemies) {
 				e.update(timeStep, keyStates, entities, player);
 			}
+			
 
+		
 
 			accumulator -= timeStep;
 
-			
+
 
 		}
 
@@ -135,12 +145,13 @@ int main(int argc, char* argv[]) {
 		window.clear();
 
 		for (Entity& e : entities) {
-			window.render(e);
+			window.render(e, camera);
 		}
-		window.render(player);
+		window.render(player, camera);
+
 
 		for (Enemy& enemy : enemies) {
-			window.render(enemy);
+			window.render(enemy, camera);
 		}
 	
 

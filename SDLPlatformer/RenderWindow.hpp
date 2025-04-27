@@ -3,6 +3,9 @@
 #include <SDL3_image/SDL_image.h>
 
 #include "entity.hpp"
+//#include "camera.hpp"
+
+class Camera;
 
 class RenderWindow {
 public:
@@ -14,7 +17,7 @@ public:
 
 	void cleanUp();
 	void clear();
-	void render(Entity& p_entity);
+	void render(Entity& p_entity, Camera camera);
 	void display();
 
 	int getWindowHeight() const;
