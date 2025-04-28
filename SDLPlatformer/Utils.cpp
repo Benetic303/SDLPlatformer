@@ -7,7 +7,7 @@
 
 
 CollisionSide checkCollision(const SDL_FRect& a, const SDL_FRect& b) {
-
+    const float tolerance = 0.1f; // Tolerance to avoid floating-point precision issues
 
     //Calculate the sides of rect A
     float aMinX = a.x;
@@ -23,7 +23,8 @@ CollisionSide checkCollision(const SDL_FRect& a, const SDL_FRect& b) {
 
 
     // Check if there is no collision
-    if (aMinX >= bMaxX || aMaxX <= bMinX || aMinY >= bMaxY || aMaxY <= bMinY) {
+    if (aMinX >= bMaxX - tolerance || aMaxX <= bMinX + tolerance || 
+        aMinY >= bMaxY || aMaxY <= bMinY) {
         return NONE; // No collision
     }
 
@@ -33,7 +34,7 @@ CollisionSide checkCollision(const SDL_FRect& a, const SDL_FRect& b) {
     float overlapLeft = aMaxX - bMinX;  // Overlap if moving left
     float overlapRight = bMaxX - aMinX; // Overlap if moving right
  
-
+	
     // Find the smallest overlap to determine the collision side
     float minOverlap = std::min({ overlapLeft, overlapRight, overlapTop, overlapBottom });
 

@@ -10,11 +10,11 @@
 Enemy::Enemy(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
     : Entity(p_pos, p_tex, width, height),
     velocity(0.0f, 0.0f),           // Initialize Player-specific members here if you add them
-    speed(50.0f),
+    speed(150.0f),
     friction(500.0f),
-    horizontalAcceleration(100.0f),
-    jumpForce(200.0f),
-    gravity(800.0f),
+    horizontalAcceleration(700.0f),
+    jumpForce(250.0f),
+    gravity(980.0f),
     EnemySpeed(0.0f), // Initialize EnemySpeed to avoid uninitialized variable warning
     maxFallSpeed(500.0f)
 {
@@ -40,6 +40,14 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
     else if (player.getPos().x < pos.x) {
         desiredVelocityX = -speed;
     }
+    if (player.getPos().y < pos.y && player.getPos().x < pos.x + 25.0f && player.getPos().x > pos.x - 25.0f && isOnGround()) {
+        velocity.y = -jumpForce; // Apply upward jump force (negative because Y increases downwards)
+        m_isOnGround = false;
+        // isJumping = true; // Update jump state if you add one
+    }
+	
+    
+	std::cout << "Enemy position: " << pos.x << ", " << pos.y << std::endl;
 
     if (keyStates[SDLK_R]) {
         pos.x = 100;
@@ -88,8 +96,8 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
         velocity.y = maxFallSpeed;
     }
  
-     
 
+    m_isOnGround = false; // Assume the player is not on the ground
     
     SDL_FRect enemyAABB = { pos.x, pos.y, (float)getCurrentFrame().w, (float)getCurrentFrame().h };
 
@@ -119,10 +127,12 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
         if (side == LEFT) {
             pos.x = entityAABB.x - enemyAABB.w; // Place enemy to the left of the entity
             velocity.x = 0;
+            std::cout << "Collision detected: LEFT" << std::endl;
         }
         if (side == RIGHT) {
             pos.x = entityAABB.x + entityAABB.w; // Place enemy to the right of the entity
             velocity.x = 0;
+            std::cout << "Collision detected: RIGHT" << std::endl;
         }
         enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
         enemyAABB.x = pos.x; // Update AABB.x after resolving the collision

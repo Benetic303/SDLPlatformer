@@ -193,9 +193,7 @@ void Player::update(float timeStep,
 
 
 
-    std::cout << "Player Position: (" << pos.x << ", " << pos.y << ")" << std::endl;
-    std::cout << "Player Velocity: (" << velocity.x << ", " << velocity.y << ")" << std::endl;
-    std::cout << "Player On Ground: " << (m_isOnGround ? "Yes" : "No") << std::endl;    
+ 
 }
     
    
