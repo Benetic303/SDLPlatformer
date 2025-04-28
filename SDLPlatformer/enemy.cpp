@@ -90,63 +90,80 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
  
      
 
-    pos.x += velocity.x * timeStep; // Update X position
+    
     SDL_FRect enemyAABB = { pos.x, pos.y, (float)getCurrentFrame().w, (float)getCurrentFrame().h };
+
+    pos.x += velocity.x * timeStep; // Update X position
+    pos.y += velocity.y * timeStep; // Update Y position
+    enemyAABB.y = pos.y; // Update AABB's Y position
+	enemyAABB.x = pos.x; // Update AABB's X position
+    m_isOnGround = false; // Assume the enemy is not on the ground
+
 
     for (Entity& e : entities) {
         SDL_FRect entityAABB = { e.getPos().x, e.getPos().y, (float)e.getCurrentFrame().w, (float)e.getCurrentFrame().h };
 
-        if (checkCollision(enemyAABB, entityAABB)) {
-            if (velocity.x > 0) { // Moving right
-                pos.x = entityAABB.x - enemyAABB.w; // Place enemy to the left of the entity
-            }
-            else if (velocity.x < 0) { // Moving left
-                pos.x = entityAABB.x + entityAABB.w; // Place enemy to the right of the entity
-            }
-            velocity.x = 0; // Stop horizontal movement
-            enemyAABB.x = pos.x; // Update AABB.x after resolving the collision
+        CollisionSide side = checkCollision(enemyAABB, entityAABB);
+
+        if (side == BOTTOM) {
+            // Move player back to the top edge of the entity
+            pos.y = entityAABB.y - enemyAABB.h;
+            velocity.y = 0;
+            m_isOnGround = true;
         }
+        if (side == TOP) {
+            // Move player back to the bottom edge of the entity
+            pos.y = entityAABB.y + entityAABB.h;
+            velocity.y = 0;
+        }
+        if (side == LEFT) {
+            pos.x = entityAABB.x - enemyAABB.w; // Place enemy to the left of the entity
+            velocity.x = 0;
+        }
+        if (side == RIGHT) {
+            pos.x = entityAABB.x + entityAABB.w; // Place enemy to the right of the entity
+            velocity.x = 0;
+        }
+        enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
+        enemyAABB.x = pos.x; // Update AABB.x after resolving the collision
     }
 
     // --- Vertical Movement and Collision ---
-    pos.y += velocity.y * timeStep; // Update Y position
-    enemyAABB.y = pos.y; // Update AABB's Y position
 
-    m_isOnGround = false; // Assume the enemy is not on the ground
-    for (Entity& e : entities) {
-        SDL_FRect entityAABB = { e.getPos().x, e.getPos().y, (float)e.getCurrentFrame().w, (float)e.getCurrentFrame().h };
-
-        if (checkCollision(enemyAABB, entityAABB)) {
-            if (velocity.y > 0) { // Falling down
-                pos.y = entityAABB.y - enemyAABB.h; // Place enemy on top of the entity
-                velocity.y = 0;
-                m_isOnGround = true; // Enemy is on the ground
-            }
-            else if (velocity.y < 0) { // Moving up
-                pos.y = entityAABB.y + entityAABB.h; // Place enemy below the entity
-                velocity.y = 0;
-            }
-            enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
-        }
-    }
 
     // --- Handle Collision with the Player ---
     SDL_FRect playerAABB = { player.getPos().x, player.getPos().y, (float)player.getCurrentFrame().w, (float)player.getCurrentFrame().h };
 
-    if (checkCollision(enemyAABB, playerAABB)) {
+    if (checkCollision(enemyAABB, playerAABB) != NONE) {
+
+        CollisionSide side = checkCollision(enemyAABB, playerAABB);
+
         if (player.getPos().y + player.getCurrentFrame().h <= pos.y + 5) { // Player is on top of the enemy
-            player.changeY(-velocity.y * timeStep); // Move the player with the enemy
+            player.changeX(-velocity.x * timeStep); // Move the player with the enemy
             player.m_isOnGround = true; // Ensure the player is considered on the ground
         }
         else {
-            // Resolve horizontal collision with the player
-            if (velocity.x > 0) {
-                pos.x = playerAABB.x - enemyAABB.w; // Place enemy to the left of the player
+            if (side == BOTTOM) {
+                // Move player back to the top edge of the entity
+                pos.y = playerAABB.y - enemyAABB.h;
+                velocity.y = 0;
+                m_isOnGround = true;
             }
-            else if (velocity.x < 0) {
-                pos.x = playerAABB.x + playerAABB.w; // Place enemy to the right of the player
+            if (side == TOP) {
+                // Move player back to the bottom edge of the entity
+                pos.y = playerAABB.y + playerAABB.h;
+                velocity.y = 0;
             }
-            velocity.x = 0; // Stop horizontal movement
+            if (side == LEFT) {
+                pos.x = playerAABB.x - enemyAABB.w; // Place enemy to the left of the entity
+                velocity.x = 0;
+            }
+            if (side == RIGHT) {
+                pos.x = playerAABB.x + playerAABB.w; // Place enemy to the right of the entity
+                velocity.x = 0;
+            }
+            enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
+            enemyAABB.x = pos.x; // Update AABB.x after resolving the collision
         }
     }
 

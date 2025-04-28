@@ -11,7 +11,6 @@
 class Enemy;
 
 
-
 class Player : public Entity {
 public:
 	Player(Vector2f p_pos, SDL_Texture* p_tex, int width, int height);

@@ -2,6 +2,13 @@
 
 #include <SDL3/SDL.h>
 
+enum CollisionSide {
+	NONE,
+	TOP,
+	BOTTOM,
+	LEFT,
+	RIGHT
+};
 
 namespace utils {
 	inline float hireTimeInSeconds() {
@@ -12,4 +19,4 @@ namespace utils {
 	}
 }
 
-bool checkCollision(const SDL_FRect& a, const SDL_FRect& b);
+CollisionSide checkCollision(const SDL_FRect& a, const SDL_FRect& b);

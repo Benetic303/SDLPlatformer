@@ -1,9 +1,12 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include <algorithm>
 
 #include "Utils.hpp"
 
-bool checkCollision(const SDL_FRect& a, const SDL_FRect& b) {
+
+
+CollisionSide checkCollision(const SDL_FRect& a, const SDL_FRect& b) {
 
 
     //Calculate the sides of rect A
@@ -19,28 +22,33 @@ bool checkCollision(const SDL_FRect& a, const SDL_FRect& b) {
     float bMaxY = b.y + b.h;
 
 
-    //If left side of A is the the right of B
-    if (aMinX >= bMaxX)
-    {
-        return false;
+    // Check if there is no collision
+    if (aMinX >= bMaxX || aMaxX <= bMinX || aMinY >= bMaxY || aMaxY <= bMinY) {
+        return NONE; // No collision
     }
 
-    //If the right side of A to the left of B
-    if (aMaxX <= bMinX)
-    {
-        return false;
+    // Determine the side of the collision
+    float overlapBottom = aMaxY - bMinY;   // Overlap if moving up
+    float overlapTop = bMaxY - aMinY; // Overlap if moving down
+    float overlapLeft = aMaxX - bMinX;  // Overlap if moving left
+    float overlapRight = bMaxX - aMinX; // Overlap if moving right
+ 
+
+    // Find the smallest overlap to determine the collision side
+    float minOverlap = std::min({ overlapLeft, overlapRight, overlapTop, overlapBottom });
+
+    if (minOverlap == overlapLeft) {
+        return LEFT;
+    }
+    else if (minOverlap == overlapRight) {
+        return RIGHT;
+    }
+    else if (minOverlap == overlapTop) {
+        return TOP;
+    }
+    else if (minOverlap == overlapBottom) {
+        return BOTTOM;
     }
 
-    //If the top side of A to the bottom of B
-    if (aMinY >= bMaxY) {
-        return false;
-    }
-
-    //If the bottom side of A to the top side of B
-    if (aMaxY <= bMinY) {
-        return false;
-    }
-
-    // If none of the sides from A are outside B
-    return true;
+    return NONE; //Fallback
 }
