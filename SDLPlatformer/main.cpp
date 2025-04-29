@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 
 	
 	Player player({ 50, 50 }, playerTexture, 30, 46);
-	std::vector<bool> keyStates(SDLK_Z, false);
+	std::vector<bool> keyStates(SDL_SCANCODE_COUNT, false);
 
 	std::vector<Enemy> enemies = {};
 
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT)
 				isRunning = false;
-			else if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_F11) {
+			else if (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_F11) {
 				fullscreen = !fullscreen;
 				SDL_SetWindowFullscreen(window.window, (fullscreen ? true : false));
 			}
@@ -95,14 +95,21 @@ int main(int argc, char* argv[]) {
 
 
 			if (event.type == SDL_EVENT_KEY_UP) {
-				if (event.key.key >= 0 && event.key.key < SDLK_Z) {
-					keyStates[event.key.key] = false;
+				if (event.key.scancode >= 0 && event.key.scancode < SDL_SCANCODE_COUNT) {
+					keyStates[event.key.scancode] = false;
 				}
 			}
 			if (event.type == SDL_EVENT_KEY_DOWN) {
 
-				if (event.key.key >= 0 && event.key.key < SDLK_Z) {
-					keyStates[event.key.key] = true;
+				if (event.key.scancode >= 0 && event.key.scancode < SDL_SCANCODE_COUNT) {
+					keyStates[event.key.scancode] = true;
+				}
+			}
+			if (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_C) {
+				camera.cameraView = !camera.cameraView;
+				if (camera.cameraView) {
+					// Initialize freeCamPos to the current camera position
+					camera.freeCamPos = camera.cameraPos;
 				}
 			}
 		}
@@ -122,8 +129,29 @@ int main(int argc, char* argv[]) {
 
 			player.update(timeStep, keyStates, entities, enemies);
 
-			camera.update(player.getPos().x, player.getPos().y, window.getWindowWidth(), window.getWindowHeight());
 
+
+			if (camera.cameraView) {
+				if (keyStates[SDL_SCANCODE_UP]) {
+					camera.cameraPos.y -= 1000 * timeStep;
+				}
+				if (keyStates[SDL_SCANCODE_DOWN]) {
+					camera.cameraPos.y += 1000 * timeStep;
+				}
+				if (keyStates[SDL_SCANCODE_RIGHT]) {
+					camera.cameraPos.x += 1000 * timeStep;
+				}
+				if (keyStates[SDL_SCANCODE_LEFT]) {
+					camera.cameraPos.x -= 1000 * timeStep;
+				}
+			}
+			
+			camera.update((camera.cameraView ? camera.freeCamPos.x : player.getPos().x), 
+						  (camera.cameraView ? camera.freeCamPos.y : player.getPos().y), 
+						  window.getWindowWidth(), 
+						  window.getWindowHeight(), 
+						  keyStates);
+			
 
 			for (Enemy& e : enemies) {
 				e.update(timeStep, keyStates, entities, player);

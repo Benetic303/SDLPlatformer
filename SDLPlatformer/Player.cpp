@@ -34,16 +34,16 @@ void Player::update(float timeStep,
 
 
     float desiredVelocityX = 0.0f;
-    if (keyStates[SDLK_D]) {
+    if (keyStates[SDL_SCANCODE_D]) {
         desiredVelocityX = speed;
     }
-    if (keyStates[SDLK_A]) {
+    if (keyStates[SDL_SCANCODE_A]) {
         desiredVelocityX = -speed;
     }
 
    
 
-    if (keyStates[SDLK_R]) {
+    if (keyStates[SDL_SCANCODE_R]) {
         pos.x = 50;
         pos.y = 50;
         velocity.y = 0;
@@ -95,7 +95,7 @@ void Player::update(float timeStep,
 
 
     // Check for spacebar press and if the player is on the ground
-    if (keyStates[SDLK_SPACE] && isOnGround()) {
+    if (keyStates[SDL_SCANCODE_SPACE] && isOnGround()) {
         velocity.y = -jumpForce; // Apply upward jump force (negative because Y increases downwards)
         m_isOnGround = false;
         // isJumping = true; // Update jump state if you add one

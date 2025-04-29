@@ -47,9 +47,8 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
     }
 	
     
-	std::cout << "Enemy position: " << pos.x << ", " << pos.y << std::endl;
 
-    if (keyStates[SDLK_R]) {
+    if (keyStates[SDL_SCANCODE_R]) {
         pos.x = 100;
         pos.y = 200;
         velocity.y = 0;
