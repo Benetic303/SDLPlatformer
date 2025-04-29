@@ -13,7 +13,7 @@ Enemy::Enemy(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
     speed(150.0f),
     friction(500.0f),
     horizontalAcceleration(700.0f),
-    jumpForce(250.0f),
+    jumpForce(400.0f),
     gravity(980.0f),
     EnemySpeed(0.0f), // Initialize EnemySpeed to avoid uninitialized variable warning
     maxFallSpeed(500.0f)
@@ -40,7 +40,7 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
     else if (player.getPos().x < pos.x) {
         desiredVelocityX = -speed;
     }
-    if (player.getPos().y < pos.y && player.getPos().x < pos.x + 25.0f && player.getPos().x > pos.x - 25.0f && isOnGround()) {
+    if (player.getPos().y < pos.y && isOnGround()) {
         velocity.y = -jumpForce; // Apply upward jump force (negative because Y increases downwards)
         m_isOnGround = false;
         // isJumping = true; // Update jump state if you add one

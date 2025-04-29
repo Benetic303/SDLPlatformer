@@ -13,7 +13,7 @@ Player::Player(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
     speed(200.0f),
     friction(500.0f),
     horizontalAcceleration(1000.0f),
-    jumpForce(300.0f),
+    jumpForce(500.0f),
     gravity(980.0f),
     maxFallSpeed(500.0f)                              
 {

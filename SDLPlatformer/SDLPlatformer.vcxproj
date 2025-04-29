@@ -164,6 +164,7 @@
     <ClCompile Include="enitity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math.cpp" />
+    <ClCompile Include="noise.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
@@ -175,6 +176,7 @@
     <ClInclude Include="enemy.hpp" />
     <ClInclude Include="entity.hpp" />
     <ClInclude Include="math.hpp" />
+    <ClInclude Include="noise.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="RenderWindow.hpp" />
     <ClInclude Include="Utils.hpp" />

@@ -10,6 +10,7 @@
 #include "Player.hpp"
 #include "enemy.hpp"
 #include "camera.hpp"
+#include "noise.hpp"
 
 
 
@@ -29,28 +30,34 @@ int main(int argc, char* argv[]) {
 	SDL_Texture* playerTexture = window.loadTexture("assets/textures/Graphics/hulking_knight - Kopie.png");
 
 
-	std::vector<Entity> entities = {};
+	// --- Noise-Based Level Generation ---
+	std::vector<Entity> entities; // Vector to hold your level entities (ground, platforms)
+	PerlinNoise noiseGenerator; // Create an instance of your noise generator
 
+	// Define level dimensions in tiles and tile size
+	const int levelWidthTiles = 1000; // Example: Level is 100 tiles wide
+	const int levelHeightTiles = 80; // Example: Level is 50 tiles high
+	const int tileSize = 32;         // Example: Each tile is 32x32 pixels (matching your grass texture)
 
-	for (int i = 0; i <= 2; i++) {
-		entities.emplace_back(Entity({i * 32.0f, (float) window.getWindowHeight()/6 - 32 }, grassTexture, 32, 32));
-	}
+	// Adjust these values to control the appearance of the generated level
+	const float noiseScale = 0.1f; // Controls the "zoom" of the noise (smaller = smoother, larger = more detailed)
+	const float noiseThreshold = 0.1f; // Controls how much solid ground is generated (higher = less ground)
 
-	for (int i = 0; i <= 4; i++) {
-		entities.emplace_back(Entity({ 2*i * 32.0f, (float)window.getWindowHeight()/6 - 32 }, grassTexture, 32, 32));
-	}
-	for (int i = 0; i <= 5; i++) {
-		entities.emplace_back(Entity({5 * i * 32.0f, (float)window.getWindowHeight() / 3 - 32 }, grassTexture, 32, 32));
-	}
-	for (int i = 0; i <= 40; i++) {
-		entities.emplace_back(Entity({i * 32.0f, (float)window.getWindowHeight()/2 - 32 }, grassTexture, 32, 32));
-	}
+	// Generate entities based on noise
+	for (int y = 0; y < levelHeightTiles; y++) {
+		for (int x = 0; x < levelWidthTiles; x++) {
+			// Calculate noise value for this tile coordinate
+			// We add a small offset to the coordinates passed to perlin to avoid issues at integer boundaries
+			float noiseValue = noiseGenerator.perlin((x + 0.5f) * noiseScale, (y + 0.5f) * noiseScale);
 
-	for (int i = 0; i <= 70; i++) {
-		entities.emplace_back(Entity({ i * 32.0f, (float)window.getWindowHeight() / 2 + 2000 }, grassTexture, 32, 32));
+			// Use a threshold to decide if this tile should be solid ground
+			if (noiseValue > noiseThreshold) {
+				// Create a new Entity (ground tile) at the corresponding game world position
+				entities.emplace_back(Entity({ (float)x * tileSize, (float)y * tileSize }, grassTexture, tileSize, tileSize));
+			}
+		}
 	}
-
-	std::cout << window.getWindowHeight() << std::endl;
+	// --- End Noise-Based Level Generation ---
 
 	
 	Player player({ 50, 50 }, playerTexture, 30, 46);
