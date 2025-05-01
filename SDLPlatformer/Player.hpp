@@ -28,6 +28,8 @@ public:
 	}
 
 	bool m_isOnGround = true; // player on ground?
+	int score = 0;
+
 
 
 private:

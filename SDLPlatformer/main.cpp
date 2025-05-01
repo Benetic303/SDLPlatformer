@@ -2,7 +2,9 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include <iostream>
+#include <string>
 #include <vector>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "RenderWindow.hpp"
 #include "entity.hpp"
@@ -14,6 +16,8 @@
 
 
 
+
+
 int main(int argc, char* argv[]) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "Video Initialisation Error: " << SDL_GetError() << std::endl;
@@ -21,10 +25,25 @@ int main(int argc, char* argv[]) {
 	/*if ((!IMG_Init(IMG_INIT_PNG)))
 		std::cout << "IMG_init has failed. Error: " << SDL_GetError() << std::endl;*/
 
+	TTF_Init();
+
+
+
 	RenderWindow window("Game v1.0", 1280, 720);
 	bool fullscreen = false;
 
-	
+
+	TTF_Font* gameFont = window.loadFont("assets/fonts/Orbitron/Orbitron-VariableFont_wght.ttf", 30);
+	SDL_Color textColor = { 255, 255, 255, 255 };
+	SDL_Texture* scoreTextTexture = NULL;
+	float scoreTextWidth = 0.0f; // Use float for texture dimensions
+	float scoreTextHeight = 0.0f; // Use float for texture dimensions
+
+	int lastDisplayedScore = -1; // Variable to track the score last rendered in the texture
+
+
+
+
 	SDL_Texture* grassTexture = window.loadTexture("assets/textures/Graphics/ground_grass_1.png");
 
 	SDL_Texture* playerTexture = window.loadTexture("assets/textures/Graphics/hulking_knight - Kopie.png");
@@ -33,15 +52,18 @@ int main(int argc, char* argv[]) {
 	// --- Noise-Based Level Generation ---
 	std::vector<Entity> entities; // Vector to hold your level entities (ground, platforms)
 	PerlinNoise noiseGenerator; // Create an instance of your noise generator
-
+	noiseGenerator.seed = 12345678910;
 	// Define level dimensions in tiles and tile size
-	const int levelWidthTiles = 1000; // Example: Level is 100 tiles wide
-	const int levelHeightTiles = 80; // Example: Level is 50 tiles high
+	const int levelWidthTiles = 100; // Example: Level is 100 tiles wide
+	const int levelHeightTiles = 1000; // Example: Level is 50 tiles high
 	const int tileSize = 32;         // Example: Each tile is 32x32 pixels (matching your grass texture)
 
 	// Adjust these values to control the appearance of the generated level
 	const float noiseScale = 0.1f; // Controls the "zoom" of the noise (smaller = smoother, larger = more detailed)
 	const float noiseThreshold = 0.1f; // Controls how much solid ground is generated (higher = less ground)
+
+
+
 
 	// Generate entities based on noise
 	for (int y = 0; y < levelHeightTiles; y++) {
@@ -166,7 +188,39 @@ int main(int argc, char* argv[]) {
 
 		}
 
-	
+		// --- Update Text Texture if Score Changed ---
+			// Assuming player.getScore() returns the current score
+		int currentScore = player.score; // Or access player.score if public
+
+		if (currentScore != lastDisplayedScore) {
+			// Score has changed, re-create the text texture
+
+			// Destroy the old texture if it exists
+			if (scoreTextTexture) {
+				SDL_DestroyTexture(scoreTextTexture);
+				scoreTextTexture = NULL; // Set to NULL to avoid using a dangling pointer
+			}
+
+			// Format the new score string
+			std::string scoreString = "Score: " + std::to_string(currentScore);
+
+
+			int scoreLength = count_digit(currentScore) + 7;
+			// Create the new text texture
+			if (gameFont) { // Only create if the font is loaded
+				scoreTextTexture = window.createTextTexture(gameFont, scoreString.c_str(), scoreLength, textColor);
+				if (scoreTextTexture) {
+					// Get the dimensions of the new text texture
+					SDL_GetTextureSize(scoreTextTexture, &scoreTextWidth, &scoreTextHeight);
+				}
+				else {
+					std::cerr << "Warning: Failed to re-create score text texture." << std::endl;
+				}
+			}
+		}
+
+			// Update the last displayed score
+			lastDisplayedScore = currentScore;
 
 
 		
@@ -188,7 +242,15 @@ int main(int argc, char* argv[]) {
 		for (Enemy& enemy : enemies) {
 			window.render(enemy, camera);
 		}
-	
+
+		if (scoreTextTexture) { // Only render if the texture was created successfully
+			// Example: Render score text in the top-left corner
+			float textX = 10.0f; // X position on screen
+			float textY = 10.0f; // Y position on screen
+			// Use the actual texture dimensions for rendering
+			window.renderText(scoreTextTexture, textX, textY, scoreTextWidth, scoreTextHeight);
+		}
+
 
 		window.display();
 
@@ -206,8 +268,8 @@ int main(int argc, char* argv[]) {
 	}
 
 
-
 	window.cleanUp();
+	TTF_Quit();
 	SDL_Quit();
 
 	return 0;

@@ -88,10 +88,66 @@ void RenderWindow::render(Entity& p_entity, Camera camera) {
     SDL_RenderTexture(renderer, p_entity.getTex(), &src, &dst);
 }
 
+void RenderWindow::renderText(SDL_Texture* p_tex, float p_x, float p_y, float p_w, float p_h) {
+    if (!renderer || !p_tex) {
+        std::cout << "Error: Renderer or Texture is NULL in RenderWindow::render(text)." << std::endl;
+        return;
+    }
+
+    // Source rectangle: use the whole texture
+    SDL_FRect src = { 0.0f, 0.0f, p_w, p_h }; // Assuming p_w and p_h are texture dimensions
+
+    // Destination rectangle: use the provided screen coordinates
+    SDL_FRect dst = { p_x, p_y, p_w, p_h };
+
+    SDL_RenderTexture(renderer, p_tex, &src, &dst);
+}
+
 
 void RenderWindow::display() {
 	SDL_RenderPresent(renderer);
 }
+
+// Implementation of loadFont
+TTF_Font *RenderWindow::loadFont(const char* p_filePath, int p_fontSize) {
+    TTF_Font* font = TTF_OpenFont(p_filePath, p_fontSize);
+    return font;
+}
+
+// Implementation of createTextTexture
+SDL_Texture *RenderWindow::createTextTexture(TTF_Font* p_font, const char* p_text, size_t length, SDL_Color p_color) {
+    if (!renderer || !p_font || !p_text) {
+        std::cout << "Error: Invalid parameters for createTextTexture." << std::endl;
+        return NULL;
+    }
+
+    // Render the text to a surface (Solid is fastest, but no anti-aliasing)
+    // Use TTF_RenderText_Blended for anti-aliased text
+    SDL_Surface* textSurface = TTF_RenderText_Solid(p_font, p_text, length, p_color);
+    if (textSurface == NULL) {
+        return NULL;
+    }
+
+    // Create a texture from the surface
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if (textTexture == NULL) {
+        std::cout << "Failed to create texture from text surface. SDL_Error: " << SDL_GetError() << std::endl;
+    }
+
+    // Free the surface (we no longer need it after creating the texture)
+    SDL_DestroySurface(textSurface);
+
+    return textTexture;
+}
+
+
+
+
+
+
+
+
+
 
 // Implementation of getWindowHeight
 int RenderWindow::getWindowHeight() const {

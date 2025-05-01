@@ -48,6 +48,7 @@ void Player::update(float timeStep,
         pos.y = 50;
         velocity.y = 0;
         velocity.x = 0;
+        score = 0;
     }
 
 
@@ -186,7 +187,7 @@ void Player::update(float timeStep,
 
     }
 
-
+    score += 1;
   
 
 

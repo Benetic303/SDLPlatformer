@@ -20,6 +20,8 @@ public:
 
 	//Sample Perlin noise at coordinates x, y
 	float perlin(float x, float y);
+
+	int seed;
 private:
 
 };

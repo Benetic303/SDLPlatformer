@@ -13,7 +13,7 @@ Vector2f PerlinNoise::randomGradient(int ix, int iy) {
 	const unsigned w = 8 * sizeof(unsigned);
 	const unsigned s = w / 2;
 	unsigned a = ix, b = iy;
-	a *= 3284157443;
+	a *= seed;
 
 	b ^= a << s | a >> w - s;
 	b *= 1911520717;

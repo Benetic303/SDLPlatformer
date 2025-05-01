@@ -20,3 +20,7 @@ namespace utils {
 }
 
 CollisionSide checkCollision(const SDL_FRect& a, const SDL_FRect& b);
+
+int count_digit(int number);
+
+	
