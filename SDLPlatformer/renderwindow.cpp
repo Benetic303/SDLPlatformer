@@ -148,7 +148,6 @@ SDL_Texture *RenderWindow::createTextTexture(TTF_Font* p_font, const char* p_tex
 
 
 
-
 // Implementation of getWindowHeight
 int RenderWindow::getWindowHeight() const {
     if (window) {

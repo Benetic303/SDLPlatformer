@@ -13,6 +13,8 @@
 #include "enemy.hpp"
 #include "camera.hpp"
 #include "noise.hpp"
+#include "Chunk.hpp"
+#include "World.hpp"
 
 
 
@@ -32,6 +34,9 @@ int main(int argc, char* argv[]) {
 	RenderWindow window("Game v1.0", 1280, 720);
 	bool fullscreen = false;
 
+	//Create the world
+	World world;
+
 
 	TTF_Font* gameFont = window.loadFont("assets/fonts/Orbitron/Orbitron-VariableFont_wght.ttf", 30);
 	SDL_Color textColor = { 255, 255, 255, 255 };
@@ -49,37 +54,6 @@ int main(int argc, char* argv[]) {
 	SDL_Texture* playerTexture = window.loadTexture("assets/textures/Graphics/hulking_knight - Kopie.png");
 
 
-	// --- Noise-Based Level Generation ---
-	std::vector<Entity> entities; // Vector to hold your level entities (ground, platforms)
-	PerlinNoise noiseGenerator; // Create an instance of your noise generator
-	noiseGenerator.seed = 12345678910;
-	// Define level dimensions in tiles and tile size
-	const int levelWidthTiles = 100; // Example: Level is 100 tiles wide
-	const int levelHeightTiles = 1000; // Example: Level is 50 tiles high
-	const int tileSize = 32;         // Example: Each tile is 32x32 pixels (matching your grass texture)
-
-	// Adjust these values to control the appearance of the generated level
-	const float noiseScale = 0.1f; // Controls the "zoom" of the noise (smaller = smoother, larger = more detailed)
-	const float noiseThreshold = 0.1f; // Controls how much solid ground is generated (higher = less ground)
-
-
-
-
-	// Generate entities based on noise
-	for (int y = 0; y < levelHeightTiles; y++) {
-		for (int x = 0; x < levelWidthTiles; x++) {
-			// Calculate noise value for this tile coordinate
-			// We add a small offset to the coordinates passed to perlin to avoid issues at integer boundaries
-			float noiseValue = noiseGenerator.perlin((x + 0.5f) * noiseScale, (y + 0.5f) * noiseScale);
-
-			// Use a threshold to decide if this tile should be solid ground
-			if (noiseValue > noiseThreshold) {
-				// Create a new Entity (ground tile) at the corresponding game world position
-				entities.emplace_back(Entity({ (float)x * tileSize, (float)y * tileSize }, grassTexture, tileSize, tileSize));
-			}
-		}
-	}
-	// --- End Noise-Based Level Generation ---
 
 	
 	Player player({ 50, 50 }, playerTexture, 30, 46);
@@ -101,7 +75,60 @@ int main(int argc, char* argv[]) {
 	float accumulator = 0.0f;
 	float currentTime = utils::hireTimeInSeconds();
 
+
+
+	PerlinNoise noiseGenerator; // Create an instance of your noise generator
+	noiseGenerator.seed = 12345678910;
+
+
+	const int chunkSize = 16;
+	// Load initial chunks around the player's starting position
+	Vector2f playerStartPos(50, 50);
+
+	Vector2f initialChunkCoords(
+		std::floor(playerStartPos.x / chunkSize) * chunkSize, 
+		std::floor(playerStartPos.y / chunkSize) * chunkSize
+	);
+
+
+	float Noisescale = 0.001f;
+	float Noisethreshold = 0.1f;
+
+	// Load the initial chunk
+	world.loadChunk(initialChunkCoords, noiseGenerator, Noisescale, Noisethreshold);
+	
+	Vector2f lastPlayerChunkCoords = initialChunkCoords;
+	int chunkLoadCooldown = 0; // Cooldown timer
+
 	while (isRunning) {
+
+		//load the chunks
+		Vector2f playerChunkCoords(
+			std::floor(player.getPos().x / chunkSize) * chunkSize,
+			std::floor(player.getPos().y / chunkSize) * chunkSize
+		);
+
+		if (chunkLoadCooldown <= 0) {
+			// Load chunks if the player has moved to a new chunk
+			if (playerChunkCoords.y != lastPlayerChunkCoords.y || playerChunkCoords.x != lastPlayerChunkCoords.x) {
+				for (int dy = -4; dy <= 4; ++dy) {
+					for (int dx = -4; dx <= 4; ++dx) {
+						Vector2f chunkCoords(
+							playerChunkCoords.x + dx * chunkSize * 16,
+							playerChunkCoords.y + dy * chunkSize * 16
+						);
+						world.loadChunk(chunkCoords, noiseGenerator, Noisescale, Noisethreshold);
+					}
+				}
+				lastPlayerChunkCoords = playerChunkCoords;
+			}
+			chunkLoadCooldown = 50; // Reset cooldown (e.g., 10 frames)
+		}
+		else {
+			chunkLoadCooldown--;
+		}
+
+
 
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT)
@@ -137,6 +164,8 @@ int main(int argc, char* argv[]) {
 		}
 
 
+
+
 		int startTicks = SDL_GetTicks();
 
 		float newTime = utils::hireTimeInSeconds();
@@ -149,7 +178,7 @@ int main(int argc, char* argv[]) {
 
 		while (accumulator >= timeStep) {
 
-			player.update(timeStep, keyStates, entities, enemies);
+			player.update(timeStep, keyStates, world, enemies);
 
 
 
@@ -176,7 +205,7 @@ int main(int argc, char* argv[]) {
 			
 
 			for (Enemy& e : enemies) {
-				e.update(timeStep, keyStates, entities, player);
+				e.update(timeStep, keyStates, world, player);
 			}
 			
 
@@ -233,9 +262,22 @@ int main(int argc, char* argv[]) {
 
 		window.clear();
 
-		for (Entity& e : entities) {
-			window.render(e, camera);
+		// Calculate the camera's visible area
+		float cameraLeft = camera.cameraPos.x;
+		float cameraRight = camera.cameraPos.x + window.getWindowWidth();
+		float cameraTop = camera.cameraPos.y;
+		float cameraBottom = camera.cameraPos.y + window.getWindowHeight();
+
+		// Render only chunks within the camera's view
+		for (const auto& [coords, chunk] : world.getChunks()) {
+			if (coords.x + chunkSize * 16 < cameraLeft || coords.x > cameraRight ||
+				coords.y + chunkSize * 16 < cameraTop || coords.y > cameraBottom) {
+				continue; // Skip chunks outside the camera's view
+			}
+			chunk.renderChunk(window.getRenderer(), camera);
 		}
+
+
 		window.render(player, camera);
 
 

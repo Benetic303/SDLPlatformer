@@ -4,7 +4,7 @@
 #include "Player.hpp"
 #include "Utils.hpp"
 #include "enemy.hpp"
-
+#include "World.hpp"
 
 
 Player::Player(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
@@ -25,7 +25,7 @@ Player::Player(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
 
 void Player::update(float timeStep, 
                     const std::vector<bool>& keyStates, 
-                    std::vector<Entity>& entities, 
+                    World& world,
                     std::vector<Enemy>& enemies) {
 
 
@@ -113,43 +113,41 @@ void Player::update(float timeStep,
 
     m_isOnGround = false; // Assume the player is not on the ground
 
-	// Check for collisions with entities
-    for (Entity& e : entities) {
-        // entity bounding box
-        SDL_FRect entityAABB = { e.getPos().x, e.getPos().y, (float)e.getCurrentFrame().w, (float)e.getCurrentFrame().h };
-
-        CollisionSide side = checkCollision(playerAABB, entityAABB);
-
+    CollisionSide side = world.CollidingWithTerrain(playerAABB);
+   
+    if (side == NONE) {
+        std::cout << "No collision detected! Side: " << side << std::endl;
+    }
+    if (side != NONE) {
+        std::cout << "Collision detected! Side: " << side << std::endl;
         if (side == BOTTOM) {
-            // Move player back to the top edge of the entity
-            pos.y = entityAABB.y - playerAABB.h;
             velocity.y = 0;
             m_isOnGround = true;
+            pos.y = std::floor(pos.y / 32.0f) * 32.0f; // Snap to the ground
         }
-        if (side == TOP) {
-            // Move player back to the bottom edge of the entity
-            pos.y = entityAABB.y + entityAABB.h;
+        else if (side == TOP) {
             velocity.y = 0;
+            pos.y = std::ceil((pos.y + playerAABB.h) / 32.0f) * 32.0f - playerAABB.h; // Snap to the ceiling
         }
-        if (side == LEFT) {
-            pos.x = entityAABB.x - playerAABB.w; // Place enemy to the left of the entity
+        else if (side == LEFT) {
             velocity.x = 0;
+            pos.x = std::ceil((pos.x + playerAABB.w) / 32.0f) * 32.0f - playerAABB.w; // Snap to the left wall
         }
-		if (side == RIGHT) {
-            pos.x = entityAABB.x + entityAABB.w; // Place enemy to the right of the entity
+        else if (side == RIGHT) {
             velocity.x = 0;
-		}
-        playerAABB.y = pos.y; // Update AABB.y after resolving the collision
-        playerAABB.x = pos.x; // Update AABB.x after resolving the collision
+            pos.x = std::floor(pos.x / 32.0f) * 32.0f; // Snap to the right wall
+
+        }
+    }
+    else {
+        m_isOnGround = false;
     }
 
-    pos.x += velocity.x * timeStep; // Update X position
-    playerAABB.x = pos.x; // Update AABB's X position
-
-    pos.y += velocity.y * timeStep;
-    playerAABB.y = pos.y; // Update AABB's Y position
+    playerAABB.y = pos.y; // Update AABB.y after resolving the collision
+    playerAABB.x = pos.x; // Update AABB.x after resolving the collision
 
 
+    
 
 	// Check for collisions with enemies
     for (Enemy& e : enemies) {

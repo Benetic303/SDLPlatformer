@@ -4,7 +4,7 @@
 #include "enemy.hpp"
 #include "Utils.hpp"
 #include "Player.hpp"
-
+#include "World.hpp"
 
 
 Enemy::Enemy(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
@@ -24,7 +24,7 @@ Enemy::Enemy(Vector2f p_pos, SDL_Texture* p_tex, int width, int height)
 
 
 
-void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vector<Entity>& entities, Player& player) {
+void Enemy::update(float timeStep, const std::vector<bool>& keyStates, World& world, Player& player) {
 
 
     velocity.y += gravity * timeStep;
@@ -106,36 +106,27 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, std::vect
 	enemyAABB.x = pos.x; // Update AABB's X position
     m_isOnGround = false; // Assume the enemy is not on the ground
 
+    CollisionSide side = world.CollidingWithTerrain(currentFrame);
 
-    for (Entity& e : entities) {
-        SDL_FRect entityAABB = { e.getPos().x, e.getPos().y, (float)e.getCurrentFrame().w, (float)e.getCurrentFrame().h };
-
-        CollisionSide side = checkCollision(enemyAABB, entityAABB);
-
+    if (side != NONE) {
         if (side == BOTTOM) {
-            // Move player back to the top edge of the entity
-            pos.y = entityAABB.y - enemyAABB.h;
             velocity.y = 0;
             m_isOnGround = true;
         }
-        if (side == TOP) {
-            // Move player back to the bottom edge of the entity
-            pos.y = entityAABB.y + entityAABB.h;
+        else if (side == TOP) {
             velocity.y = 0;
         }
-        if (side == LEFT) {
-            pos.x = entityAABB.x - enemyAABB.w; // Place enemy to the left of the entity
+        else if (side == LEFT || side == RIGHT) {
             velocity.x = 0;
-            std::cout << "Collision detected: LEFT" << std::endl;
         }
-        if (side == RIGHT) {
-            pos.x = entityAABB.x + entityAABB.w; // Place enemy to the right of the entity
-            velocity.x = 0;
-            std::cout << "Collision detected: RIGHT" << std::endl;
-        }
-        enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
-        enemyAABB.x = pos.x; // Update AABB.x after resolving the collision
     }
+    else {
+        m_isOnGround = false;
+    }
+
+    enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
+    enemyAABB.x = pos.x; // Update AABB.x after resolving the collision
+
 
     // --- Vertical Movement and Collision ---
 

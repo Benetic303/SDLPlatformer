@@ -14,6 +14,11 @@ struct Vector2f {
 		std::cout << x << ", " << y << std::endl;
 	}
 
+	// Comparison operator for std::map
+	bool operator<(const Vector2f& other) const {
+		return (x < other.x) || (x == other.x && y < other.y);
+	}
+
 
 	float x, y;
 

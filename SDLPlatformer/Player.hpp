@@ -6,7 +6,7 @@
 #include "entity.hpp"
 #include "math.hpp"
 #include "Utils.hpp"
-
+#include "World.hpp"
 
 class Enemy;
 
@@ -17,7 +17,7 @@ public:
 
 	void update(float timeStep, 
 				const std::vector<bool>& keyStates, 
-				std::vector<Entity>& entities, 
+				World& world,
 				std::vector<Enemy>& enemies);
 
 	void changeX(float amount);

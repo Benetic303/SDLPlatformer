@@ -26,8 +26,13 @@ public:
 	TTF_Font *loadFont(const char* p_filePath, int p_fontSize);
 	SDL_Texture* createTextTexture(TTF_Font* p_font, const char* p_text, size_t length, SDL_Color p_color);
 
+
+
 	int getWindowHeight() const;
 	int getWindowWidth() const;
+	SDL_Renderer* getRenderer() {
+		return renderer;
+	}
 
 	SDL_Window* window;
 

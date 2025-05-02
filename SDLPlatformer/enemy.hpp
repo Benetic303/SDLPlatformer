@@ -5,7 +5,7 @@
 
 #include "entity.hpp"
 #include "math.hpp"
-
+#include "World.hpp"
 
 class Player;
 
@@ -15,7 +15,7 @@ class Enemy : public Entity {
 public:
 	Enemy(Vector2f p_pos, SDL_Texture* p_tex, int width, int height);
 
-	void update(float timeStep, const std::vector<bool>& keyStates, std::vector<Entity>& entities, Player& player);
+	void update(float timeStep, const std::vector<bool>& keyStates, World& world, Player& player);
 
 	void changeX(float amount);
 	void changeY(float amount);
