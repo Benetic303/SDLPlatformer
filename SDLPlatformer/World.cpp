@@ -14,10 +14,21 @@
 
 void World::loadChunk(Vector2f coords, PerlinNoise& noiseGenerator, float scale, float threshold) {
     if (chunks.find(coords) == chunks.end()) {
+        std::cout << "Loading chunk at coordinates: x=" << coords.x << ", y=" << coords.y << std::endl;
         Chunk newChunk(coords);
         newChunk.generateTerrain(noiseGenerator, scale, threshold);
         chunks[coords] = newChunk;
     }
+    else {
+        std::cout << "Chunk already exists at coordinates: x=" << coords.x << ", y=" << coords.y << std::endl;
+    }
+}
+void World::enqueueChunk(Vector2f coords, PerlinNoise& noiseGenerator, float scale, float threshold) {
+    {
+        std::lock_guard<std::mutex> lock(chunkMutex);
+        chunkQueue.emplace(coords, noiseGenerator, scale, threshold);
+    }
+    chunkCondition.notify_one(); // Notify the worker thread
 }
 
 const Chunk* World::getChunk(Vector2f coords) const {
@@ -85,47 +96,91 @@ CollisionSide World::CollidingWithTerrain(const SDL_FRect& rect) const {
         std::floor(rect.x / chunkSizeInPixels) * chunkSizeInPixels,
         std::floor(rect.y / chunkSizeInPixels) * chunkSizeInPixels
     );
-
-    std::cout << "Chunk Coords: x=" << chunkCoords.x
-        << ", y=" << chunkCoords.y << std::endl; //Debugging
+    std::cout << "STAGE 5: Calculated Chunk Coords: x=" << chunkCoords.x
+        << ", y=" << chunkCoords.y << std::endl;
 
     auto it = chunks.find(chunkCoords);
-    if (it != chunks.end()) {
-        const Chunk& chunk = it->second; // Access the chunk
-        // Now you can check for collisions with blocks in this chunk
+    if (it == chunks.end()) {
+        std::cout << "STAGE 5: No chunk found at these coordinates!" << std::endl;
+        return NONE; // No collision
     }
-    if (it != chunks.end()) {
-        const Chunk& chunk = it->second;
-        const auto& tileData = chunk.getTileData();
 
-        
+    const Chunk& chunk = it->second;
+    const auto& tileData = chunk.getTileData();
 
-        // Iterate over the tiles in the chunk
-        for (size_t tileY = 0; tileY < tileData.size(); ++tileY) {
-            for (size_t tileX = 0; tileX < tileData[tileY].size(); ++tileX) {
-                if (tileData[tileY][tileX] == 1) { // Solid tile
-                    SDL_FRect tileRect = {
-                        chunkCoords.x + tileX * tileSize,
-                        chunkCoords.y + tileY * tileSize,
-                        (float)tileSize,
-                        (float)tileSize
-                    };
-                   
+    std::cout << "STAGE 4: Found chunk at coordinates. Checking tiles..." << std::endl;
+   
+    // Iterate over the tiles in the chunk
+    for (size_t tileY = 0; tileY < tileData.size(); ++tileY) {
+        for (size_t tileX = 0; tileX < tileData[tileY].size(); ++tileX) {
+            //std::cout << "STAGE 2................. " << std::endl;
+            if (tileData[tileY][tileX] == 1) { // Solid tile
+                SDL_FRect tileRect = {
+                    chunkCoords.x + tileX * tileSize,
+                    chunkCoords.y + tileY * tileSize,
+                    (float)tileSize,
+                    (float)tileSize
+                };
+                //std::cout << "STAGE 1................. " << std::endl;
 
-                    // Check for collision with the rect
-                    if (SDL_HasRectIntersectionFloat(&rect, &tileRect)) {
-                        // Collision detected
-                        std::cout << "Collision with tile at (" << tileX << ", " << tileY << ")" << std::endl;
-                        return checkCollision(rect, tileRect); // Return the collision side
-                    }
+                // Check for collision with the rect
+                if (SDL_HasRectIntersectionFloat(&rect, &tileRect)) {
+                    // Collision detected
+                    std::cout << "Collision with tile at (" << tileX << ", " << tileY << ")" << std::endl;
+                    return checkCollision(rect, tileRect); // Return the collision side
                 }
             }
         }
     }
+ 
     
     
     
     
     return NONE; // No collision
 
+}
+
+void World::chunkGenerationWorker() {
+    while (true) {
+        std::unique_lock<std::mutex> lock(chunkMutex);
+
+        // Wait until there is work to do or the thread is stopped
+        chunkCondition.wait(lock, [this]() { return !chunkQueue.empty() || stopThread; });
+
+        if (stopThread && chunkQueue.empty()) {
+            break; // Exit the thread
+        }
+
+        // Get the next chunk generation request
+        auto [coords, noiseGenerator, scale, threshold] = chunkQueue.front();
+        chunkQueue.pop();
+        lock.unlock();
+
+        // Generate the chunk
+        if (chunks.find(coords) == chunks.end()) {
+            Chunk newChunk(coords);
+            newChunk.generateTerrain(noiseGenerator, scale, threshold);
+
+            // Add the chunk to the map (thread-safe)
+            std::lock_guard<std::mutex> chunkLock(chunkMutex);
+            chunks[coords] = newChunk;
+        }
+    }
+}
+
+void World::startChunkGenerationThread() {
+    stopThread = false;
+    chunkThread = std::thread(&World::chunkGenerationWorker, this);
+}
+
+void World::stopChunkGenerationThread() {
+    {
+        std::lock_guard<std::mutex> lock(chunkMutex);
+        stopThread = true;
+    }
+    chunkCondition.notify_all(); // Wake up the thread
+    if (chunkThread.joinable()) {
+        chunkThread.join();
+    }
 }

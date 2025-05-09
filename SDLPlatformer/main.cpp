@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <thread>
 
 #include "RenderWindow.hpp"
 #include "entity.hpp"
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]) {
 
 	//Create the world
 	World world;
-
+	world.startChunkGenerationThread();
 
 	TTF_Font* gameFont = window.loadFont("assets/fonts/Orbitron/Orbitron-VariableFont_wght.ttf", 30);
 	SDL_Color textColor = { 255, 255, 255, 255 };
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
 	noiseGenerator.seed = 12345678910;
 
 
-	const int chunkSize = 16;
+	const int chunkSize = 16 * 32;
 	// Load initial chunks around the player's starting position
 	Vector2f playerStartPos(50, 50);
 
@@ -92,7 +93,7 @@ int main(int argc, char* argv[]) {
 
 
 	float Noisescale = 0.001f;
-	float Noisethreshold = 0.1f;
+	float Noisethreshold = 0.01f;
 
 	// Load the initial chunk
 	world.loadChunk(initialChunkCoords, noiseGenerator, Noisescale, Noisethreshold);
@@ -101,6 +102,8 @@ int main(int argc, char* argv[]) {
 	int chunkLoadCooldown = 0; // Cooldown timer
 
 	while (isRunning) {
+
+
 
 		//load the chunks
 		Vector2f playerChunkCoords(
@@ -111,23 +114,23 @@ int main(int argc, char* argv[]) {
 		if (chunkLoadCooldown <= 0) {
 			// Load chunks if the player has moved to a new chunk
 			if (playerChunkCoords.y != lastPlayerChunkCoords.y || playerChunkCoords.x != lastPlayerChunkCoords.x) {
-				for (int dy = -4; dy <= 4; ++dy) {
-					for (int dx = -4; dx <= 4; ++dx) {
+				for (int dy = -10; dy <= 10; ++dy) {
+					for (int dx = -10; dx <= 10; ++dx) {
 						Vector2f chunkCoords(
-							playerChunkCoords.x + dx * chunkSize * 16,
-							playerChunkCoords.y + dy * chunkSize * 16
+							playerChunkCoords.x + dx * chunkSize,
+							playerChunkCoords.y + dy * chunkSize
 						);
-						world.loadChunk(chunkCoords, noiseGenerator, Noisescale, Noisethreshold);
+						world.enqueueChunk(chunkCoords, noiseGenerator, Noisescale, Noisethreshold);
 					}
 				}
 				lastPlayerChunkCoords = playerChunkCoords;
 			}
-			chunkLoadCooldown = 50; // Reset cooldown (e.g., 10 frames)
+			chunkLoadCooldown = 1; // Reset cooldown (e.g., 10 frames)
 		}
 		else {
 			chunkLoadCooldown--;
 		}
-
+		
 
 
 		while (SDL_PollEvent(&event)) {
@@ -178,7 +181,7 @@ int main(int argc, char* argv[]) {
 
 		while (accumulator >= timeStep) {
 
-			player.update(timeStep, keyStates, world, enemies);
+			
 
 
 
@@ -207,7 +210,8 @@ int main(int argc, char* argv[]) {
 			for (Enemy& e : enemies) {
 				e.update(timeStep, keyStates, world, player);
 			}
-			
+
+			player.update(timeStep, keyStates, world, enemies);
 
 		
 
@@ -274,7 +278,7 @@ int main(int argc, char* argv[]) {
 				coords.y + chunkSize * 16 < cameraTop || coords.y > cameraBottom) {
 				continue; // Skip chunks outside the camera's view
 			}
-			chunk.renderChunk(window.getRenderer(), camera);
+			chunk.renderChunk(window.getRenderer(), camera, grassTexture);
 		}
 
 
@@ -308,7 +312,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
-
+	world.stopChunkGenerationThread();
 
 	window.cleanUp();
 	TTF_Quit();

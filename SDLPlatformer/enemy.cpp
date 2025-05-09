@@ -106,7 +106,7 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, World& wo
 	enemyAABB.x = pos.x; // Update AABB's X position
     m_isOnGround = false; // Assume the enemy is not on the ground
 
-    CollisionSide side = world.CollidingWithTerrain(currentFrame);
+    /*CollisionSide side = world.CollidingWithTerrain(currentFrame);
 
     if (side != NONE) {
         if (side == BOTTOM) {
@@ -122,7 +122,7 @@ void Enemy::update(float timeStep, const std::vector<bool>& keyStates, World& wo
     }
     else {
         m_isOnGround = false;
-    }
+    }*/
 
     enemyAABB.y = pos.y; // Update AABB.y after resolving the collision
     enemyAABB.x = pos.x; // Update AABB.x after resolving the collision

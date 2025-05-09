@@ -31,7 +31,7 @@ public:
 	}
 
 	//Chunkrendering
-	void renderChunk(SDL_Renderer* renderer, const Camera camera) const;
+	void renderChunk(SDL_Renderer* renderer, const Camera camera, SDL_Texture* texture) const;
 
 
 

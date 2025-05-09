@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,14 +92,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\lib\x64;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\lib\x64;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\lib\x64;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\lib\x64;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL3.lib;SDL3_test.lib;SDL3_image.lib;SDL3_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -111,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -120,7 +120,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\lib\x64;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\lib\x64;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\lib\x64;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\lib\x64;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL3.lib;SDL3_test.lib;SDL3_image.lib;SDL3_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -130,14 +130,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\lib\x64;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\lib\x64;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\lib\x64;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\lib\x64;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL3.lib;SDL3_test.lib;SDL3_image.lib;SDL3_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -149,7 +149,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\include;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\include;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\include;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\include;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -158,7 +158,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Dev\Libaries\SDL\SDL3-3.2.10\lib\x64;C:\Dev\Libaries\SDL\SDL3_image-3.2.4\lib\x64;C:\Dev\Libaries\SDL\SDL3_ttf-devel-3.1.0-VC\SDL3_ttf-3.1.0\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Dev\C++\Libaries\SDL3-devel-3.2.12-VC\SDL3-3.2.12\lib\x64;C:\Dev\C++\Libaries\SDL3_image-devel-3.2.4-VC\SDL3_image-3.2.4\lib\x64;C:\Dev\C++\Libaries\SDL3_ttf-devel-3.2.2-VC\SDL3_ttf-3.2.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL3.lib;SDL3_test.lib;SDL3_image.lib;SDL3_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

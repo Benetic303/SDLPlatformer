@@ -49,6 +49,8 @@ void Player::update(float timeStep,
         velocity.y = 0;
         velocity.x = 0;
         score = 0;
+        std::cout << "Player position reset to: x=" << pos.x << ", y=" << pos.y << std::endl;
+
     }
 
 
@@ -113,17 +115,19 @@ void Player::update(float timeStep,
 
     m_isOnGround = false; // Assume the player is not on the ground
 
+
+   
     CollisionSide side = world.CollidingWithTerrain(playerAABB);
    
     if (side == NONE) {
-        std::cout << "No collision detected! Side: " << side << std::endl;
+        //std::cout << "No collision detected! Side: " << side << std::endl;
     }
     if (side != NONE) {
         std::cout << "Collision detected! Side: " << side << std::endl;
         if (side == BOTTOM) {
             velocity.y = 0;
             m_isOnGround = true;
-            pos.y = std::floor(pos.y / 32.0f) * 32.0f; // Snap to the ground
+            pos.y = std::floor(pos.y / 32.0f) * 32.0f + 20.0f; // Snap to the ground
         }
         else if (side == TOP) {
             velocity.y = 0;
@@ -131,12 +135,11 @@ void Player::update(float timeStep,
         }
         else if (side == LEFT) {
             velocity.x = 0;
-            pos.x = std::ceil((pos.x + playerAABB.w) / 32.0f) * 32.0f - playerAABB.w; // Snap to the left wall
+            pos.x = std::ceil((pos.x + playerAABB.w) / 32.0f) * 32.0f + playerAABB.w; // Snap to the left wall
         }
         else if (side == RIGHT) {
             velocity.x = 0;
-            pos.x = std::floor(pos.x / 32.0f) * 32.0f; // Snap to the right wall
-
+            pos.x = std::floor(pos.x / 32.0f) * 32.0f + 16.0f; // Snap to the right wall
         }
     }
     else {

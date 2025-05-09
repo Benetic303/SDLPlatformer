@@ -30,7 +30,7 @@ void Chunk::generateTerrain(PerlinNoise& noiseGenerator, float scale, float thre
 
 
 
-void Chunk::renderChunk(SDL_Renderer* renderer, const Camera camera) const {
+void Chunk::renderChunk(SDL_Renderer* renderer, const Camera camera, SDL_Texture* texture) const {
     for (size_t y = 0; y < tileData.size(); ++y) {
         for (size_t x = 0; x < tileData[y].size(); ++x) {
             // Calculate the tile's position and size, adjusted for the camera's zoom
@@ -46,14 +46,15 @@ void Chunk::renderChunk(SDL_Renderer* renderer, const Camera camera) const {
 
             // Set the tile color based on its type
             if (tileData[y][x] == 1) {
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for solid tiles
+                SDL_RenderTexture(renderer, texture, NULL, &tileRect);
+                //SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for solid tiles
             }
             else {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Blue for empty tiles
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // Black for empty tiles
             }
 
             // Render the tile
-            SDL_RenderFillRect(renderer, &tileRect);
+            //SDL_RenderFillRect(renderer, &tileRect);
         }
     }
 
