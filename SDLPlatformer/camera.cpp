@@ -67,7 +67,7 @@ void Camera::update(float PlayerPosX, float PlayerPosY, int WindowHeight, int Wi
     freeCamPos.y = PlayerPosY;
 
 
-    std::cout << "Camera position: " << cameraPos.x << ", " << cameraPos.y << std::endl;
+    //std::cout << "Camera position: " << cameraPos.x << ", " << cameraPos.y << std::endl;
  
    
     

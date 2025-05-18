@@ -9,18 +9,18 @@
 #include "noise.hpp"
 #include "Chunk.hpp"
 #include "Utils.hpp"
-
+#include "CollisionSide.hpp"
 
 
 void World::loadChunk(Vector2f coords, PerlinNoise& noiseGenerator, float scale, float threshold) {
     if (chunks.find(coords) == chunks.end()) {
-        std::cout << "Loading chunk at coordinates: x=" << coords.x << ", y=" << coords.y << std::endl;
+        //std::cout << "Loading chunk at coordinates: x=" << coords.x << ", y=" << coords.y << std::endl;
         Chunk newChunk(coords);
         newChunk.generateTerrain(noiseGenerator, scale, threshold);
         chunks[coords] = newChunk;
     }
     else {
-        std::cout << "Chunk already exists at coordinates: x=" << coords.x << ", y=" << coords.y << std::endl;
+        //std::cout << "Chunk already exists at coordinates: x=" << coords.x << ", y=" << coords.y << std::endl;
     }
 }
 void World::enqueueChunk(Vector2f coords, PerlinNoise& noiseGenerator, float scale, float threshold) {
@@ -96,20 +96,21 @@ CollisionSide World::CollidingWithTerrain(const SDL_FRect& rect) const {
         std::floor(rect.x / chunkSizeInPixels) * chunkSizeInPixels,
         std::floor(rect.y / chunkSizeInPixels) * chunkSizeInPixels
     );
-    std::cout << "STAGE 5: Calculated Chunk Coords: x=" << chunkCoords.x
-        << ", y=" << chunkCoords.y << std::endl;
+    //std::cout << "STAGE 5: Calculated Chunk Coords: x=" << chunkCoords.x
+        //<< ", y=" << chunkCoords.y << std::endl;
 
     auto it = chunks.find(chunkCoords);
     if (it == chunks.end()) {
-        std::cout << "STAGE 5: No chunk found at these coordinates!" << std::endl;
+        //std::cout << "STAGE 5: No chunk found at these coordinates!" << std::endl;
         return NONE; // No collision
     }
 
     const Chunk& chunk = it->second;
     const auto& tileData = chunk.getTileData();
 
-    std::cout << "STAGE 4: Found chunk at coordinates. Checking tiles..." << std::endl;
-   
+    //std::cout << "STAGE 4: Found chunk at coordinates. Checking tiles..." << std::endl;
+
+    CollisionSide result = NONE;
     // Iterate over the tiles in the chunk
     for (size_t tileY = 0; tileY < tileData.size(); ++tileY) {
         for (size_t tileX = 0; tileX < tileData[tileY].size(); ++tileX) {
@@ -127,7 +128,7 @@ CollisionSide World::CollidingWithTerrain(const SDL_FRect& rect) const {
                 if (SDL_HasRectIntersectionFloat(&rect, &tileRect)) {
                     // Collision detected
                     std::cout << "Collision with tile at (" << tileX << ", " << tileY << ")" << std::endl;
-                    return checkCollision(rect, tileRect); // Return the collision side
+                    result = (CollisionSide)(result | checkCollision(rect, tileRect));
                 }
             }
         }
@@ -137,7 +138,7 @@ CollisionSide World::CollidingWithTerrain(const SDL_FRect& rect) const {
     
     
     
-    return NONE; // No collision
+    return result; // No collision
 
 }
 

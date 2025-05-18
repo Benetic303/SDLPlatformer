@@ -1,14 +1,10 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include "CollisionSide.hpp"
 
-enum CollisionSide {
-	NONE,
-	TOP,
-	BOTTOM,
-	LEFT,
-	RIGHT
-};
+//Forward declaration, to break circular dependency with "World.hpp"
+class World;
 
 namespace utils {
 	inline float hireTimeInSeconds() {
@@ -21,5 +17,6 @@ namespace utils {
 
 CollisionSide checkCollision(const SDL_FRect& a, const SDL_FRect& b);
 
-int count_digit(int number);
+int count_digit(int number);				 
 
+void moveAndCollide(World& world, SDL_FRect& aabb, float& pos, float delta, bool isVertical);

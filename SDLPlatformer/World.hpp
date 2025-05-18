@@ -15,7 +15,7 @@
 #include "math.hpp"
 #include "noise.hpp"
 #include "Utils.hpp"
-
+#include "CollisionSide.hpp"
 
 
 
@@ -53,4 +53,5 @@ private:
     std::thread chunkThread;
 
     void chunkGenerationWorker();
+
 };

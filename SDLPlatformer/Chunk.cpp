@@ -9,6 +9,7 @@
 
 
 void Chunk::generateTerrain(PerlinNoise& noiseGenerator, float scale, float threshold) {
+	Vector2f playerSpawn = { 50.0f, 50.0f }; // Adjust to real spawn position, with function arguments doesn't work for now    
     std::vector<std::vector<float>> noiseCache(tileData.size(), std::vector<float>(tileData[0].size()));
 
     for (size_t y = 0; y < tileData.size(); ++y) {
@@ -23,7 +24,18 @@ void Chunk::generateTerrain(PerlinNoise& noiseGenerator, float scale, float thre
 
     for (size_t y = 0; y < tileData.size(); ++y) {
         for (size_t x = 0; x < tileData[y].size(); ++x) {
-            tileData[y][x] = (noiseCache[y][x] > threshold) ? 1 : 0;
+
+            float worldX = ChunkCoords.x + x * 32.0f;
+            float worldY = ChunkCoords.y + y * 32.0f;
+
+            // Clear blocks around the player's spawn position
+            float distanceToSpawn = std::sqrt(std::pow(worldX + playerSpawn.x, 2) + std::pow(worldY + playerSpawn.y, 2));
+            if (distanceToSpawn < 512.0f) { // Clear a 512-pixel radius around the spawn
+                tileData[y][x] = 0; // Empty tile
+            }
+            else {
+                tileData[y][x] = (noiseCache[y][x] > threshold) ? 1 : 0;
+            }
         }
     }
 }

@@ -98,59 +98,100 @@ void Player::update(float timeStep,
 
 
     // Check for spacebar press and if the player is on the ground
-    if (keyStates[SDL_SCANCODE_SPACE] && isOnGround()) {
+    if (keyStates[SDL_SCANCODE_SPACE] && m_isOnGround) {
         velocity.y = -jumpForce; // Apply upward jump force (negative because Y increases downwards)
         m_isOnGround = false;
-        // isJumping = true; // Update jump state if you add one
     }
 
-    SDL_FRect playerAABB = { pos.x, pos.y, (float)getCurrentFrame().w, (float)getCurrentFrame().h };
 
 
     pos.y += velocity.y * timeStep;
-    playerAABB.y = pos.y; // Update AABB's Y position
     pos.x += velocity.x * timeStep;
-    playerAABB.x = pos.x; // Update AABB's X position
-    
 
+
+
+    SDL_FRect playerAABB = { pos.x, pos.y, (float)getCurrentFrame().w, (float)getCurrentFrame().h };
     m_isOnGround = false; // Assume the player is not on the ground
 
+    CollisionSide sides = world.CollidingWithTerrain(playerAABB);
 
-   
-    CollisionSide side = world.CollidingWithTerrain(playerAABB);
-   
-    if (side == NONE) {
-        //std::cout << "No collision detected! Side: " << side << std::endl;
+    if (sides & BOTTOM) {
+        // Snap to ground
+        pos.y = std::floor((pos.y + playerAABB.h) / 32.0f) * 32.0f - playerAABB.h;
+        velocity.y = 0;
+        m_isOnGround = true;
     }
-    if (side != NONE) {
-        std::cout << "Collision detected! Side: " << side << std::endl;
-        if (side == BOTTOM) {
-            velocity.y = 0;
-            m_isOnGround = true;
-            pos.y = std::floor(pos.y / 32.0f) * 32.0f + 20.0f; // Snap to the ground
-        }
-        else if (side == TOP) {
-            velocity.y = 0;
-            pos.y = std::ceil((pos.y + playerAABB.h) / 32.0f) * 32.0f - playerAABB.h; // Snap to the ceiling
-        }
-        else if (side == LEFT) {
-            velocity.x = 0;
-            pos.x = std::ceil((pos.x + playerAABB.w) / 32.0f) * 32.0f + playerAABB.w; // Snap to the left wall
-        }
-        else if (side == RIGHT) {
-            velocity.x = 0;
-            pos.x = std::floor(pos.x / 32.0f) * 32.0f + 16.0f; // Snap to the right wall
-        }
+    else if (sides & TOP) {
+        // Snap to ceiling
+        pos.y = std::ceil(pos.y / 32.0f) * 32.0f;
+        velocity.y = 0;
     }
-    else {
-        m_isOnGround = false;
+    if (sides & LEFT) {
+        pos.x = std::floor((pos.x + playerAABB.w) / 32.0f) * 32.0f - playerAABB.w;
+        velocity.x = 0;
+    }
+    else if (sides & RIGHT) {
+        pos.x = std::ceil(pos.x / 32.0f) * 32.0f;
+        velocity.x = 0;
     }
 
-    playerAABB.y = pos.y; // Update AABB.y after resolving the collision
-    playerAABB.x = pos.x; // Update AABB.x after resolving the collision
+    playerAABB.x = pos.x;
+    playerAABB.y = pos.y;
+    //float totalDeltaY = velocity.y * timeStep;
+    //const float subStep = 2.0f; // or 2.0f for more precision
+    //float movedY = 0.0f;
+    //float signY = (totalDeltaY > 0) ? 1.0f : -1.0f;
+    //m_isOnGround = false;
+
+    //while (std::abs(movedY) < std::abs(totalDeltaY)) {
+    //    float stepY = std::min(subStep, std::abs(totalDeltaY - movedY)) * signY;
+    //    pos.y += stepY;
+    //    SDL_FRect playerAABB = { pos.x, pos.y, (float)getCurrentFrame().w, (float)getCurrentFrame().h };
+    //    CollisionSide ySide = world.CollidingWithTerrain(playerAABB);
+
+    //    if (yside == BOTTOM) {
+    //        // Snap to ground
+    //        pos.y = std::floor((pos.y + playerAABB.h) / 32.0f) * 32.0f - playerAABB.h;
+    //        velocity.y = 0;
+    //        m_isOnGround = true;
+    //        break;
+    //    }
+    //    else if (ySide == TOP) {
+    //        // Snap to ceiling
+    //        pos.y = std::ceil(pos.y / 32.0f) * 32.0f;
+    //        velocity.y = 0;
+    //        break;
+    //    }
+    //    movedY += stepY;
+    //}
 
 
-    
+
+    //float totalDeltaX = velocity.x * timeStep;
+    //const float subStepX = 2.0f;
+    //float movedX = 0.0f;
+    //float signX = (totalDeltaX > 0) ? 1.0f : -1.0f;
+
+    //while (std::abs(movedX) < std::abs(totalDeltaX)) {
+    //    float stepX = std::min(subStepX, std::abs(totalDeltaX - movedX)) * signX;
+    //    pos.x += stepX;
+    //    SDL_FRect playerAABB = { pos.x, pos.y, (float)getCurrentFrame().w, (float)getCurrentFrame().h };
+    //    CollisionSide xSide = world.CollidingWithTerrain(playerAABB);
+
+    //    if (xSide == LEFT) {
+    //        pos.x = std::floor((pos.x + playerAABB.w) / 32.0f) * 32.0f - playerAABB.w;
+    //        velocity.x = 0;
+    //        break;
+    //    }
+    //    else if (xSide == RIGHT) {
+    //        pos.x = std::ceil(pos.x / 32.0f) * 32.0f;
+    //        velocity.x = 0;
+    //        break;
+    //    }
+    //    movedX += stepX;
+    //}
+
+ 
 
 	// Check for collisions with enemies
     for (Enemy& e : enemies) {

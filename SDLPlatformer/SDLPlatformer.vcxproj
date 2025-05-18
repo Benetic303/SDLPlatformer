@@ -180,6 +180,7 @@
     </ClCompile>
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="Chunk.hpp" />
+    <ClInclude Include="CollisionSide.hpp" />
     <ClInclude Include="enemy.hpp" />
     <ClInclude Include="entity.hpp" />
     <ClInclude Include="math.hpp" />
