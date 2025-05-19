@@ -10,9 +10,16 @@
 *.userosscache
 *.sln.docstates
 
-# User-specific files (MonoDevelop/Xamarin Studio)
-*.userprefs
-
+# CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+# For Ninja generator (if you use it)
+build.ninja
+# --- END CMAKE SECTION ---
 # Mono auto generated files
 mono_crash.*
 
