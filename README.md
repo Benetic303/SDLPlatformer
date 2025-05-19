@@ -9,6 +9,7 @@ Prerequisites:
       * **Windows:** Visual Studio (Community Edition is free) with the "Desktop development with C++" workload.
       * **Linux:** `g++` or `clang++` (often included in a `build-essential` package).
       * **macOS:** Xcode Command Line Tools (`clang++`).
+
 Note:
   The libaries are installed inside third_party, but you can also install them manually.
   CMake is configured to detect them, but make sure your directories for the libaries match the directories in CMakeLists.txt
