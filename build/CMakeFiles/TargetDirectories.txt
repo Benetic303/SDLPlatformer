@@ -1,3 +1,0 @@
-C:/Dev/C++/Projects/SDLPlatformer/build/CMakeFiles/SDLPlatformer.dir
-C:/Dev/C++/Projects/SDLPlatformer/build/CMakeFiles/ALL_BUILD.dir
-C:/Dev/C++/Projects/SDLPlatformer/build/CMakeFiles/ZERO_CHECK.dir
